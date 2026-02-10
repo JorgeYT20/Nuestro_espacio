@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Jorge & Giannina</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<section class="hero">
+    <div class="hero-content">
+
+        <div class="photo-wrapper">
+            <!-- Reemplaza la ruta por tu foto -->
+            <img src="img/nosotros.jpg" alt="Jorge y Giannina">
+        </div>
+
+        <h1 class="names">Jorge & Giannina</h1>
+
+        <p class="phrase">
+            “Desde el 10 de abril del 2010, escribiendo nuestra historia.”
+        </p>
+
+        <div class="counter" id="contador">
+            Cargando nuestro tiempo juntos...
+        </div>
+        <div class="anniversary">
+            💍 Boda: <strong>13 de Julio</strong>
+        </div>
+        
+        <button class="music-btn" id="musicBtn">
+            🎵 Reproducir música
+            <span>“Nuestra canción”</span>
+        </button>
+        
+        <div class="music-progress">
+            <span id="currentTime">0:00</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span id="duration">0:00</span>
+        </div>
+
+        <audio id="music" preload="metadata">
+            <source src="audio/tic.mp3" type="audio/mpeg">
+        </audio>  
+        <script>
+            const music = document.getElementById("music");
+            const musicBtn = document.getElementById("musicBtn");
+            const progressFill = document.getElementById("progressFill");
+            const currentTimeEl = document.getElementById("currentTime");
+            const durationEl = document.getElementById("duration");
+        
+            let reproduciendo = false;
+        
+            function formatTime(time) {
+                const min = Math.floor(time / 60);
+                const sec = Math.floor(time % 60).toString().padStart(2, "0");
+                return `${min}:${sec}`;
+            }
+        
+            music.addEventListener("loadedmetadata", () => {
+                durationEl.textContent = formatTime(music.duration);
+            });
+        
+            music.addEventListener("timeupdate", () => {
+                const progress = (music.currentTime / music.duration) * 100;
+                progressFill.style.width = `${progress}%`;
+                currentTimeEl.textContent = formatTime(music.currentTime);
+            });
+        
+            musicBtn.addEventListener("click", () => {
+                if (!reproduciendo) {
+                    music.volume = 0.4;
+                    music.play();
+                    musicBtn.classList.add("playing");
+                    musicBtn.innerHTML = "⏸ Pausar música <span>“Nuestra canción”</span>";
+                } else {
+                    music.pause();
+                    musicBtn.classList.remove("playing");
+                    musicBtn.innerHTML = "🎵 Reproducir música <span>“Nuestra canción”</span>";
+                }
+                reproduciendo = !reproduciendo;
+            });
+        </script>
+        
+              
+
+    </div>
+</section>
+
+<script>
+    const fechaInicio = new Date(2010, 3, 10, 0, 0, 0); // 10 abril 2010
+    const sonido = document.getElementById("ticSound");
+
+    function actualizarContador() {
+        const ahora = new Date();
+
+        let años = ahora.getFullYear() - fechaInicio.getFullYear();
+        let meses = ahora.getMonth() - fechaInicio.getMonth();
+        let dias = ahora.getDate() - fechaInicio.getDate();
+        let horas = ahora.getHours() - fechaInicio.getHours();
+        let minutos = ahora.getMinutes() - fechaInicio.getMinutes();
+        let segundos = ahora.getSeconds() - fechaInicio.getSeconds();
+
+        if (segundos < 0) {
+            segundos += 60;
+            minutos--;
+        }
+        if (minutos < 0) {
+            minutos += 60;
+            horas--;
+        }
+        if (horas < 0) {
+            horas += 24;
+            dias--;
+        }
+        if (dias < 0) {
+            const diasMesAnterior = new Date(
+                ahora.getFullYear(),
+                ahora.getMonth(),
+                0
+            ).getDate();
+            dias += diasMesAnterior;
+            meses--;
+        }
+        if (meses < 0) {
+            meses += 12;
+            años--;
+        }
+
+        document.getElementById("contador").innerHTML = `
+            ⏳ 
+            <strong>${años}</strong> años 
+            <strong>${meses}</strong> meses 
+            <strong>${dias}</strong> días <br>
+            <strong>${horas}</strong> horas 
+            <strong>${minutos}</strong> min 
+            <strong class="seconds">${segundos}</strong> seg juntos
+        `;
+
+        // sonido suave cada minuto
+        if (segundos === 0) {
+            sonido.volume = 0.15;
+            sonido.play();
+        }
+    }
+
+    actualizarContador();
+    setInterval(actualizarContador, 1000);
+</script>
+
+<!-- Galeria de fotos-->
+
+<section class="gallery" id="galeria">
+    <h2>Nuestros momentos</h2>
+
+    <div class="gallery-wrapper">
+        <button class="gallery-btn left" id="prevBtn">❮</button>
+
+        <div class="gallery-container">
+            <img src="img/foto1.jpg" class="gallery-img active">
+            <img src="img/foto2.jpg" class="gallery-img">
+            <img src="img/foto3.jpg" class="gallery-img">
+            <img src="img/foto4.jpg" class="gallery-img">
+            <img src="img/foto5.jpg" class="gallery-img">
+        </div>
+
+        <button class="gallery-btn right" id="nextBtn">❯</button>
+    </div>
+</section>
+
+<script>
+    const images = document.querySelectorAll(".gallery-img");
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+
+    let index = 0;
+    let interval = setInterval(nextImage, 5000);
+
+    function showImage(i) {
+        images.forEach(img => img.classList.remove("active"));
+        images[i].classList.add("active");
+    }
+
+    function nextImage() {
+        index = (index + 1) % images.length;
+        showImage(index);
+    }
+
+    function prevImage() {
+        index = (index - 1 + images.length) % images.length;
+        showImage(index);
+    }
+
+    nextBtn.addEventListener("click", () => {
+        clearInterval(interval);
+        nextImage();
+        interval = setInterval(nextImage, 5000);
+    });
+
+    prevBtn.addEventListener("click", () => {
+        clearInterval(interval);
+        prevImage();
+        interval = setInterval(nextImage, 5000);
+    });
+</script>
+
+
+
+
+</body>
+</html>
